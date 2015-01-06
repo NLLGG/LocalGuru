@@ -1,1 +1,12 @@
+# LocalGuru
 settings.php
+# Composer
+composer.phar
+vendor/
+# vim
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
