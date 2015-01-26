@@ -3,6 +3,8 @@
             "vendor-dir": "."
     },
     "require": {
-        "phpmailer/phpmailer": "v5.2.8"
+        "phpmailer/phpmailer": "v5.2.8",
+	"bower-asset/bootstrap": "dev-master",
+	"bower-asset/openlayers3": "dev-master"
     }
 }
