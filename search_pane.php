@@ -175,6 +175,7 @@ class SearchPane
 #				<div id="toggle_link" style="display: none; margin-top: 15px;"><textarea rows="10" cols="25">'.$l_ref.'</textarea></div>
 #				<div id="map_url"><a href="'.MAP_URL.'kaartgebruik" target="_blank" title="Bekijk de mogelijkheden voor het linken naar of inbedden van deze kaart">Deze kaart extern gebruiken</a></div>
 		$l_pane .= '	<div id="map_url"><a href="'.ROOT_URL.'" target="_self" title="Ga naar de Buurtlinux website">Bezoek de Buurtlinux website</a></div>
+				<div id="map_url"><a href="https://github.com/NLLGG/LocalGuru" target="_self" title="Bekijk de bron-code van deze site">Help mee de bron-code te verbeteren!</a></div>
 				</div>
 		';
 		return $l_pane;
