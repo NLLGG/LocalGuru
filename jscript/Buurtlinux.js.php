@@ -215,7 +215,7 @@ function geocode_focus_point() {
 					alert('Het opgegeven adres kan niet worden gevonden.');
 				}
 			} else {
-				alert('Fout tijdens geocoderen van opgegeven adres. Error code: ' + xhs.status);
+				alert('Fout tijdens geocoderen van opgegeven adres. Error code: ' + l_req.status);
 			}
 		}
 	}; 
