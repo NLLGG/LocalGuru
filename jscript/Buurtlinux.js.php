@@ -61,7 +61,7 @@ function load_buurtlinux_layer() {
 	<?php
 		// Obtain the linux-helpers that were selected based on the search 
 		// criteria.
-		require_once LIBDIR.'/linux_helpers.php';
+		require_once('../lib/linux_helpers.php');
 		$l_helpers = new LinuxHelpers();
 		$l_helpers->process_search_criteria( $search['distros'], $search['desktops'], $search['actions'], $search['groups'], $search['targets'], $search['rewards'] );
 		$l_selection = $l_helpers->select_helpers();
@@ -134,7 +134,7 @@ function hide_popup() {
 
 // Shows a single popup-balloon
 function show_popup( a_content, a_anchor, a_lonlat ) {	
-	var l_new_popup = new OpenLayers.Popup.AnchoredBubble(
+	var l_new_popup = new OpenLayers.Popup.Anchored(
 		null,			// no ID
 		a_lonlat,		// coordinates of popup
 		null,			// no size (autosize)
@@ -185,66 +185,50 @@ function geocode_focus_point() {
 	{
 		print "g_address = '".$search['address']."';\n";
 	}
-	if( isset( $search['radius'] ) && $search['radius'] != "" )
-	{
-		print "g_radius = '".$search['radius']."';\n";
-	}
 	if( isset( $search['country'] ) && $search['country'] != "" )
 	{
 		print "g_countrycode = '".$search['country']."';\n";
 	}
 ?>
+	var key = "<?php print OPENCAGE_KEY; ?>";
 	// URL that queries the Nominatim search engine for nodes, ways, relations etc.
 	// Limit the results to 1 at maximum
-	var l_nominatim_url = 	'http://nominatim.openstreetmap.org/search?q='+
-						g_address + 
-						'&format=xml&limit=1&countrycodes=' + 
-						g_countrycode;
+	var l_nominatim_url = 'https://api.opencagedata.com/geocode/v1/xml?q='+g_address+'&countrycode='+g_countrycode+'&limit=1&no_annotations=1&key='+key;
 	
 	// Create an object that can load external XML pages/files
-	if (window.XMLHttpRequest) { 		// Standard object
-		l_req = new XMLHttpRequest();     	// Firefox, Safari, ...
-	} 
-	else if (window.ActiveXObject) {		// Internet Explorer 
-		l_req = new ActiveXObject("Microsoft.XMLHTTP");
-	}
+	l_req = new XMLHttpRequest();
 	
 	// What to do if server has responded to our request
 	l_req.onreadystatechange = function() { // instructions to process the response
 		if( l_req.readyState  == 4 )
 		{
 			if( l_req.status  == 200 ) {
-				var xmlDoc = parseXml( l_req.responseText  );
-				var places = xmlDoc.getElementsByTagName('place');
+				var xmlDoc = l_req.responseXML;
+				var geometry = xmlDoc.getElementsByTagName('geometry')[0];
 
 				// Did the query result in places?
-				if( places != null && places.length ) {
-					var l_attrs = places[0].attributes;
-					g_center_lonlat =new OpenLayers.LonLat(
-						l_attrs.getNamedItem("lon").value,
-						l_attrs.getNamedItem("lat").value
-					);
-				}
-				else {
+				if( geometry.hasChildNodes ) {
+					var lat = geometry.firstChild.childNodes[0].nodeValue;
+					var lon = geometry.lastChild.childNodes[0].nodeValue;
+					g_center_lonlat = new OpenLayers.LonLat(lon, lat);
+				} else {
 					alert('Het opgegeven adres kan niet worden gevonden.');
 				}
-				//g_center_lonlat = new OpenLayers.LonLat( 5.169499, 52.22856 );
-			}
-			else
+			} else {
 				alert('Fout tijdens geocoderen van opgegeven adres. Error code: ' + xhs.status);
+			}
 		}
 	}; 
 	
 	// Send our request synchonously
 	try {
 		l_req.open("GET", l_nominatim_url, false );
-		l_req.overrideMimeType("text/xml");
-		l_req.send(null); 
+		l_req.send(); 
 	}
 	catch(error) {
 		alert("Er is een onverwacht probleem opgetreden tijdens het geocoderen van het adres.\n\nEen overzichtskaart van Nederland zal worden weergegeven.\n\nError code:\n\n" + error.message);
 		// Center on Netherlands
-		g_center_lonlat =new OpenLayers.LonLat( 5.169499, 52.22856 );
+		g_center_lonlat = new OpenLayers.LonLat( 5.169499, 52.22856 );
 	}
 }
 
@@ -294,36 +278,4 @@ function focus_map() {
 		new OpenLayers.Projection("EPSG:4326"),				// transform from WGS 1984
 		new OpenLayers.Projection("EPSG:900913") 			// to Spherical Mercator Projection
 	) );
-}
-
-// Function obtained from
-// http://stackoverflow.com/questions/1013582/ajax-responsexml-errors
-//
-// to provide for parsing of XML text
-function parseXml(xmlText){
-    try{
-        var text = xmlText;
-        if (typeof DOMParser != "undefined") { 
-            // Mozilla, Firefox, and related browsers 
-            var parser=new DOMParser();
-            var doc=parser.parseFromString(text,"text/xml");
-            return doc; 
-        }else if (typeof ActiveXObject != "undefined") { 
-                // Internet Explorer. 
-        var doc = new ActiveXObject("Microsoft.XMLDOM");  // Create an empty document 
-            doc.loadXML(text);            // Parse text into it 
-            return doc;                   // Return it 
-        }else{ 
-                // As a last resort, try loading the document from a data: URL 
-                // This is supposed to work in Safari. Thanks to Manos Batsis and 
-                // his Sarissa library (sarissa.sourceforge.net) for this technique. 
-                var url = "data:text/xml;charset=utf-8," + encodeURIComponent(text); 
-                var request = new XMLHttpRequest(); 
-                request.open("GET", url, false); 
-                request.send(null); 
-                return request.responseXML; 
-        }
-    }catch(err){
-        alert("There was a problem parsing the xml:\n" + err.message);
-    }
 }
