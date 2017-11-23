@@ -1,3 +1,7 @@
+This project is archived as of november 2017
+============================================
+[Contact us if you have interest or question regarding this project](https://nllgg.nl/contact).
+
 LocalGuru
 =========
 
@@ -37,8 +41,8 @@ We are searching for people who are willing to contribute to this project and ma
 for community's. Meanwhile being aware of the current state of the code. None the less, we are
 certain there is great potential for this project. 
 
-Take a look and give us feedback at the [issue-tracker][3]. 
+
 
 [1]: https://buurtlinux.nl 			"BuurtLinux"
 [2]: https://nllgg.nl				"Nederlandse Linux Gebruikers Groep"
-[3]: https://github.com/NLLGG/LocalGuru/issues	"Issue tracker on Github for LocalGuru"
+
